@@ -1,5 +1,6 @@
 plugins {
     id("java-library")
+    id("maven-publish")
 }
 
 group = "de.allycraft"
@@ -31,4 +32,26 @@ tasks.register<JavaExec>("runDemo") {
     mainClass.set("de.allycraft.minestom.perms.demo.DemoServer")
     classpath = sourceSets["test"].runtimeClasspath
     workingDir = file("run/")
+}
+
+java {
+    withSourcesJar()
+}
+
+publishing {
+    repositories {
+        maven {
+            url = uri("https://mvn.allycraft.de/snapshots/")
+            credentials {
+                username = System.getenv("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD")
+            }
+        }
+    }
+
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
 }
